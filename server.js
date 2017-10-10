@@ -1,47 +1,71 @@
 const express = require('express');
 const queryString = require('query-string');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
 const USERS = [
-  {id: 1,
-   firstName: 'Joe',
-   lastName: 'Schmoe',
-   userName: 'joeschmoe@business.com',
-   position: 'Sr. Engineer',
-   isAdmin: true,
-   // NEVER EVER EVER store passwords in plain text in real life. NEVER!!!!!!!!!!!
-   password: 'password'
+  {
+    id: 1,
+    firstName: 'Joe',
+    lastName: 'Schmoe',
+    userName: 'joeschmoe@business.com',
+    position: 'Sr. Engineer',
+    isAdmin: true,
+    // NEVER EVER EVER store passwords in plain text in real life. NEVER!!!!!!!!!!!
+    password: 'password'
   },
-  {id: 2,
-   firstName: 'Sally',
-   lastName: 'Student',
-   userName: 'sallystudent@business.com',
-   position: 'Jr. Engineer',
-   isAdmin: true,
-   // NEVER EVER EVER store passwords in plain text in real life. NEVER!!!!!!!!!!!
-   password: 'password'
+  {
+    id: 2,
+    firstName: 'Sally',
+    lastName: 'Student',
+    userName: 'sallystudent@business.com',
+    position: 'Jr. Engineer',
+    isAdmin: true,
+    // NEVER EVER EVER store passwords in plain text in real life. NEVER!!!!!!!!!!!
+    password: 'password'
   },
-  {id: 3,
-   firstName: 'Lila',
-   lastName: 'LeMonde',
-   userName: 'lila@business.com',
-   position: 'Growth Hacker',
-   isAdmin: false,
-   // NEVER EVER EVER store passwords in plain text in real life. NEVER!!!!!!!!!!!
-   password: 'password'
+  {
+    id: 3,
+    firstName: 'Lila',
+    lastName: 'LeMonde',
+    userName: 'lila@business.com',
+    position: 'Growth Hacker',
+    isAdmin: false,
+    // NEVER EVER EVER store passwords in plain text in real life. NEVER!!!!!!!!!!!
+    password: 'password'
   },
-  {id: 4,
-   firstName: 'Freddy',
-   lastName: 'Fun',
-   userName: 'freddy@business.com',
-   position: 'Community Manager',
-   isAdmin: false,
-   // NEVER EVER EVER store passwords in plain text in real life. NEVER!!!!!!!!!!!
-   password: 'password'
+  {
+    id: 4,
+    firstName: 'Freddy',
+    lastName: 'Fun',
+    userName: 'freddy@business.com',
+    position: 'Community Manager',
+    isAdmin: false,
+    // NEVER EVER EVER store passwords in plain text in real life. NEVER!!!!!!!!!!!
+    password: 'password'
   }
 ];
 
+
+app.use(express.static('public'));
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(cookieParser());
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method.toLowerCase() === 'options') {
+    res.send(200);
+  } else {
+    next();
+  }
+});
 
 function gateKeeper(req, res, next) {
   //  `Object.assign` here gives us a neat, clean way to express the following idea:
@@ -53,8 +77,11 @@ function gateKeeper(req, res, next) {
   //  Either way, we're guaranteed to end up
   //  with an object that has `user` and `pass`
   //  keys.
-  const {user, pass} = Object.assign(
-    {user: null, pass: null}, queryString.parse(req.get('x-username-and-password')));
+
+  const { user, pass } = Object.assign(
+    { user: null, pass: null },
+    queryString.parse(req.get('x-username-and-password'))
+  );
 
   // ^^ the more verbose way to express this is:
   //
@@ -67,7 +94,9 @@ function gateKeeper(req, res, next) {
   // we set `req.user` equal to that object.
   // Otherwise, `req.user` will be undefined.
   req.user = USERS.find(
-    (usr, index) => usr.userName === user && usr.password === pass);
+    usr => usr.userName === user && usr.password === pass
+  );
+  
   // gotta call `next()`!!! otherwise this middleware
   // will hang.
   next();
@@ -78,20 +107,27 @@ function gateKeeper(req, res, next) {
 // to the request object.
 app.use(gateKeeper);
 
-
-
-app.get("/api/users/me", (req, res) => {
+app.get('/api/users/me', (req, res) => {
   // send an error message if no or wrong credentials sent
   if (req.user === undefined) {
-    return res.status(403).json({message: 'Must supply valid user credentials'});
+    return res
+      .status(403)
+      .json({ message: 'Must supply valid user credentials' });
   }
   // we're only returning a subset of the properties
   // from the user object. Notably, we're *not*
   // sending `password` or `isAdmin`.
-  const {firstName, lastName, id, userName, position} = req.user;
-  return res.json({firstName, lastName, id, userName, position});
+  const { firstName, lastName, id, userName, position } = req.user;
+  return res.json({ firstName, lastName, id, userName, position });
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Your app is listening on port ${process.env.PORT}`);
+app.post('/api/auth/login', function(req, res) {
+  if (req.user) {
+    res.cookie('isLoggedIn', true);
+  }
+  res.send(req.user);
+});
+
+app.listen(8080, () => {
+  console.log(`Your app is listening on port ${8080}`);
 });
