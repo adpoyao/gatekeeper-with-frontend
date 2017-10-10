@@ -2,7 +2,6 @@
 /* global Cookies */
 
 function generateNavHTML() {
-
   const isLoggedIn = Cookies.get('isLoggedIn') === 'true';
 
   let loginTxt = 'Login';
@@ -20,26 +19,46 @@ function renderNav(html) {
   $('.js-navigation').html(html);
 }
 
-function renderForm() {
+function generateFeedback() {
+  const isLoggedIn = Cookies.get('isLoggedIn') === 'true';
+  let feedback = '<p>We couldn\'t find that user!</p>';
+
+  if (isLoggedIn) {
+    feedback = '<p>You\'re logged in!</p>';
+  }
+  return feedback;
+}
+
+function renderForm(feedback, loginAttempted) {
+  const isLoggedIn = Cookies.get('isLoggedIn') === 'true';
+  
   $('form')
     .find('input')
-    .val();
+    .val('')
+    .end()
+    .prop('hidden', isLoggedIn);
+
+  if (loginAttempted) {
+    $('.js-form-alert')
+      .html(feedback)
+      .focus();
+  }
 }
 
 function handleLogin() {
   $('form').on('submit', function(e) {
     e.preventDefault();
-    
+
     const serializedForm = $('form').serialize();
-    const authHeader = {'x-username-and-password': serializedForm };
-    
+    const authHeader = { 'x-username-and-password': serializedForm };
+
     const requestObj = {
       url: '/api/auth/login',
       method: 'POST',
       headers: authHeader,
       success: function(res) {
         renderNav(generateNavHTML());
-        renderForm();
+        renderForm(generateFeedback(), true);
         console.log(res);
       }
     };
@@ -50,6 +69,6 @@ function handleLogin() {
 
 $(function() {
   renderNav(generateNavHTML());
-  renderForm();
+  renderForm(generateFeedback(), false);
   handleLogin();
 });
