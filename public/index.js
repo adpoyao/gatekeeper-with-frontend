@@ -3,10 +3,13 @@
 
 function generateNavHTML() {
 
+  const isLoggedIn = Cookies.get('isLoggedIn') === 'true';
+
   let loginTxt = 'Login';
-  if (Cookies.get('isLoggedIn')) {
+  if (isLoggedIn) {
     loginTxt = 'Hi, user!';
   }
+
   return (
     `<a href="#">Home</a>
     <a href="#">${loginTxt}</a>`
