@@ -2,12 +2,15 @@
 /* global Cookies */
 
 function generateNavHTML() {
+
   let loginTxt = 'Login';
   if (Cookies.get('isLoggedIn')) {
     loginTxt = 'Hi, user!';
   }
-  return `<a href="#">Home</a>
-    <a href="#">${loginTxt}</a>`;
+  return (
+    `<a href="#">Home</a>
+    <a href="#">${loginTxt}</a>`
+  );
 }
 
 function renderNav(html) {
@@ -23,21 +26,14 @@ function renderForm() {
 function handleLogin() {
   $('form').on('submit', function(e) {
     e.preventDefault();
-
-    const usr = {};
-
-    $('input').each(function(i, input) {
-      usr[input.name] = input.value;
-    });
-
+    
+    const serializedForm = $('form').serialize();
+    const authHeader = {'x-username-and-password': serializedForm };
+    
     const requestObj = {
       url: '/api/auth/login',
       method: 'POST',
-      beforeSend: function(req) {
-        const { user, pass } = usr;
-        const userPassQuery = `user=${user}&pass=${pass}`;
-        req.setRequestHeader('x-username-and-password', userPassQuery);
-      },
+      headers: authHeader,
       success: function(res) {
         renderNav(generateNavHTML());
         renderForm();
