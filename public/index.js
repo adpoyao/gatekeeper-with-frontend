@@ -1,9 +1,9 @@
 'use strict';
 /* global Cookies */
 
-function generateNavHTML() {
-  const isLoggedIn = Cookies.get('isLoggedIn') === 'true';
+let isLoggedIn;
 
+function generateNavHTML() {
   let loginTxt = 'Login';
   if (isLoggedIn) {
     loginTxt = 'Hi, user!';
@@ -20,7 +20,6 @@ function renderNav(html) {
 }
 
 function generateFeedback() {
-  const isLoggedIn = Cookies.get('isLoggedIn') === 'true';
   let feedback = '<p>We couldn\'t find that user!</p>';
 
   if (isLoggedIn) {
@@ -30,8 +29,6 @@ function generateFeedback() {
 }
 
 function renderForm(feedback, loginAttempted) {
-  const isLoggedIn = Cookies.get('isLoggedIn') === 'true';
-  
   $('form')
     .find('input')
     .val('')
@@ -50,13 +47,16 @@ function handleLogin() {
     e.preventDefault();
 
     const serializedForm = $('form').serialize();
-    const authHeader = { 'x-username-and-password': serializedForm };
+    const authHeader = { 
+      'x-username-and-password': serializedForm 
+    };
 
     const requestObj = {
       url: '/api/auth/login',
       method: 'POST',
       headers: authHeader,
       success: function(res) {
+        isLoggedIn = Cookies.get('isLoggedIn') === 'true';
         renderNav(generateNavHTML());
         renderForm(generateFeedback(), true);
         console.log(res);
@@ -68,6 +68,7 @@ function handleLogin() {
 }
 
 $(function() {
+  isLoggedIn = Cookies.get('isLoggedIn') === true;
   renderNav(generateNavHTML());
   renderForm(generateFeedback(), false);
   handleLogin();
