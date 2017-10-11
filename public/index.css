@@ -3,18 +3,24 @@
 }
 
  * + * {
-   margin-top: 1.2rem;
+   margin-top: 1.5rem;
  }
 
- body {
+ html {
    font: 100%/1.5 sans-serif;
  }
 
-label, input {
+label,
+input, 
+button {
   font: inherit;
+}
+
+label,
+input {
   margin-top: 0;
 }
 
-.form-group {
-  margin-top: .8rem;
+button {
+  display: block;
 }
