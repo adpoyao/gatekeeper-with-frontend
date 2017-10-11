@@ -125,7 +125,8 @@ app.post('/api/auth/login', function(req, res) {
   if (req.user) {
     res.cookie('isLoggedIn', true);
   }
-  res.send(req.user);
+  const { firstName, lastName, id, userName, position } = req.user;
+  return res.json({ firstName, lastName, id, userName, position });
 });
 
 app.listen(8080, () => {
