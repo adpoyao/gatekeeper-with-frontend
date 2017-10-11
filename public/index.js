@@ -1,5 +1,5 @@
-'use strict';
 /* global Cookies */
+'use strict';
 
 let isLoggedIn;
 
@@ -56,6 +56,7 @@ function handleLogin() {
       method: 'POST',
       headers: authHeader,
       success: function(res) {
+        isLoggedIn = Cookies.get('isLoggedIn') === 'true';
         renderApp({showFeedback: true});
         console.log(res);
       }
@@ -66,11 +67,11 @@ function handleLogin() {
 }
 
 function renderApp(opts = {showFeedback: false}) {
-  isLoggedIn = Cookies.get('isLoggedIn') === 'true';
   renderNav();
   renderForm(opts);
 }
 $(function() {
+  isLoggedIn = Cookies.get('isLoggedIn') === 'true';
   renderApp();
   handleLogin();
 });
