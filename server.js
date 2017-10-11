@@ -124,9 +124,14 @@ app.get('/api/users/me', (req, res) => {
 app.post('/api/auth/login', function(req, res) {
   if (req.user) {
     res.cookie('isLoggedIn', true);
+    const { firstName, lastName, id, userName, position } = req.user;
+    return res.json({ firstName, lastName, id, userName, position });
   }
-  const { firstName, lastName, id, userName, position } = req.user;
-  return res.json({ firstName, lastName, id, userName, position });
+  if (req.user === undefined) {
+    return res
+      .status(403)
+      .json({ message: 'Must supply valid user credentials' });
+  }
 });
 
 app.listen(8080, () => {
