@@ -7,49 +7,23 @@
 // and upon form submission
 let isLoggedIn;
 
-function generateNavHTML() {
-  let loginTxt = 'Login';
-  if (isLoggedIn) {
-    loginTxt = 'Hi, user!';
-  }
+$(function() {
+  // check the isLoggedIn cookie,
+  // in case there's a user from a previous visit
+  isLoggedIn = Cookies.get('isLoggedIn') === 'true';
 
-  return (
-    `<a href="#">Home</a>
-    <a href="#">${loginTxt}</a>`
-  );
-}
+  // on first render, there is no need
+  // to show the feedback
+  renderApp({showFeedback: false});
+  handleLogin();
+});
 
-function renderNav() {
-  $('.js-navigation').html(generateNavHTML());
-}
-
-function generateFeedback() {
-  let feedback = '<p>We couldn\'t find that user!</p>';
-
-  if (isLoggedIn) {
-    feedback = '<p>You\'re logged in!</p>';
-  }
-  return feedback;
-}
-
-// Our parent render function takes an argument 
-// representing a collection of render options.
-// showFeedback is a true/false boolean from that object.
-
-function renderForm(showFeedback) {
-  $('form')
-    .find('input')
-    .val('')
-    // end allows us to go back to our first query,
-    // the form.
-    .end()
-    .prop('hidden', isLoggedIn);
-
-  if (showFeedback) {
-    $('.js-login-alert')
-      .html(generateFeedback())
-      .focus();
-  }
+// this function is simple now,
+// but could be useful for organizing render
+// if the UI gets more complex
+function renderApp(opts) {
+  renderNav();
+  renderForm(opts.showFeedback);
 }
 
 function handleLogin() {
@@ -84,20 +58,45 @@ function handleLogin() {
   });
 }
 
-// this function is simple now,
-// but could be useful for organizing render
-// if the UI gets more complex
-function renderApp(opts) {
-  renderNav();
-  renderForm(opts.showFeedback);
+function renderNav() {
+  $('.js-navigation').html(generateNavHTML());
 }
-$(function() {
-  // check the isLoggedIn cookie,
-  // in case there's a user from a previous visit
-  isLoggedIn = Cookies.get('isLoggedIn') === 'true';
 
-  // on first render, there is no need
-  // to show the feedback
-  renderApp({showFeedback: false});
-  handleLogin();
-});
+function generateNavHTML() {
+  let loginTxt = 'Login';
+  if (isLoggedIn) {
+    loginTxt = 'Hi, user!';
+  }
+  return (
+    `<a href="#">Home</a>
+    <a href="#">${loginTxt}</a>`
+  );
+}
+
+// Our parent render function takes an argument 
+// representing a collection of render options.
+// showFeedback is a true/false boolean from that object.
+
+function renderForm(showFeedback) {
+  $('form')
+    .find('input')
+    .val('')
+    // end allows us to go back to our first query,
+    // the form.
+    .end()
+    .prop('hidden', isLoggedIn);
+
+  if (showFeedback) {
+    $('.js-login-alert')
+      .html(generateFeedback())
+      .focus();
+  }
+}
+function generateFeedback() {
+  let feedback = '<p>We couldn\'t find that user!</p>';
+
+  if (isLoggedIn) {
+    feedback = '<p>You\'re logged in!</p>';
+  }
+  return feedback;
+}
