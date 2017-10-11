@@ -15,8 +15,8 @@ function generateNavHTML() {
   );
 }
 
-function renderNav(html) {
-  $('.js-navigation').html(html);
+function renderNav() {
+  $('.js-navigation').html(generateNavHTML());
 }
 
 function generateFeedback() {
@@ -28,16 +28,16 @@ function generateFeedback() {
   return feedback;
 }
 
-function renderForm(feedback, loginAttempted) {
+function renderForm(showFeedback) {
   $('form')
     .find('input')
     .val('')
     .end()
     .prop('hidden', isLoggedIn);
 
-  if (loginAttempted) {
-    $('.js-form-alert')
-      .html(feedback)
+  if (showFeedback) {
+    $('.js-login-alert')
+      .html(generateFeedback())
       .focus();
   }
 }
@@ -57,8 +57,8 @@ function handleLogin() {
       headers: authHeader,
       success: function(res) {
         isLoggedIn = Cookies.get('isLoggedIn') === 'true';
-        renderNav(generateNavHTML());
-        renderForm(generateFeedback(), true);
+        renderNav();
+        renderForm(true);
         console.log(res);
       }
     };
@@ -68,8 +68,8 @@ function handleLogin() {
 }
 
 $(function() {
-  isLoggedIn = Cookies.get('isLoggedIn') === true;
-  renderNav(generateNavHTML());
-  renderForm(generateFeedback(), false);
+  isLoggedIn = Cookies.get('isLoggedIn') === 'true';
+  renderNav();
+  renderForm();
   handleLogin();
 });
