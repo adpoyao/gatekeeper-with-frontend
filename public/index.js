@@ -70,8 +70,10 @@ function generateNavHTML() {
   if (isLoggedIn) {
     loginTxt = 'Hi, user!';
   }
-  return `<a href="#">Home</a>
-    <a href="#">${loginTxt}</a>`;
+  return (
+    `<a href="#">Home</a>
+    <a href="#">${loginTxt}</a>`
+  );
 }
 
 // Our parent render function takes an argument
