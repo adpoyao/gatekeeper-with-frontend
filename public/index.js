@@ -44,6 +44,7 @@ function handleLogin() {
       method: 'POST',
       headers: authHeader,
       success: processResponse,
+      error: processResponse
     };
 
     $.ajax(requestObj);
@@ -87,7 +88,6 @@ function renderForm(showFeedback) {
     .prop('hidden', isLoggedIn);
 
   if (showFeedback) {
-    alert('aaa');
     $('.js-login-alert')
       .html(generateFeedback())
       .focus();
