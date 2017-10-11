@@ -28,7 +28,7 @@ function generateFeedback() {
   return feedback;
 }
 
-function renderForm(showFeedback) {
+function renderForm({showFeedback}) {
   $('form')
     .find('input')
     .val('')
@@ -56,9 +56,7 @@ function handleLogin() {
       method: 'POST',
       headers: authHeader,
       success: function(res) {
-        isLoggedIn = Cookies.get('isLoggedIn') === 'true';
-        renderNav();
-        renderForm(true);
+        renderApp({showFeedback: true});
         console.log(res);
       }
     };
@@ -67,9 +65,12 @@ function handleLogin() {
   });
 }
 
-$(function() {
+function renderApp(opts = {showFeedback: false}) {
   isLoggedIn = Cookies.get('isLoggedIn') === 'true';
   renderNav();
-  renderForm();
+  renderForm(opts);
+}
+$(function() {
+  renderApp();
   handleLogin();
 });
