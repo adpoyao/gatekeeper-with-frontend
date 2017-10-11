@@ -4,10 +4,14 @@
   "description": "Gatekeeper middleware with a UI",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev:server": "nodemon server.js",
+    "dev:client": "browser-sync start --proxy 'localhost:8080' --serveStatic 'public' --files 'public'",
+    "dev": "npm run dev:server | npm run dev:client"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
+    "browser-sync": "^2.18.13",
     "cookie-parser": "^1.4.3",
     "express": "^4.16.2",
     "query-string": "^4.3.4"
