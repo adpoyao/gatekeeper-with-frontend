@@ -2,16 +2,16 @@
   box-sizing: border-box;
 }
 
- * + * {
-   margin-top: 1.5rem;
- }
+* + * {
+  margin-top: 1.5rem;
+}
 
- html {
-   font: 100%/1.5 sans-serif;
- }
+html {
+  font: 100%/1.5 sans-serif;
+}
 
 label,
-input, 
+input,
 button {
   font: inherit;
 }

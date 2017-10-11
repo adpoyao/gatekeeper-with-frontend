@@ -94,10 +94,10 @@ function renderForm(showFeedback) {
   }
 }
 function generateFeedback() {
-  let feedback = "<p>We couldn't find that user!</p>";
+  let feedback = '<p>We couldn\'t find that user!</p>';
 
   if (isLoggedIn) {
-    feedback = "<p>You're logged in!</p>";
+    feedback = '<p>You\'re logged in!</p>';
   }
   return feedback;
 }
