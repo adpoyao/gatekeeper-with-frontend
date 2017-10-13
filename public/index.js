@@ -66,6 +66,11 @@ function renderNav() {
 }
 
 function generateNavHTML() {
+  // TODO: this function needs a logout link!
+  // that is, one of these links
+  // should trigger all the server-side stuff
+  // that will log us out
+
   let loginTxt = 'Login';
   if (isLoggedIn) {
     loginTxt = 'Hi, user!';

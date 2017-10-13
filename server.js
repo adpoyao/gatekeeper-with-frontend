@@ -136,7 +136,7 @@ app.post('/api/auth/login', function(req, res) {
 });
 
 app.post('/api/auth/logout', (req, res) => {
-  // With the way this app is built,
+  // TODO: With the way this app is built,
   // you'll have to remove the `isLoggedIn` cookie
   // and clear out app.locals.user. Google away!
 });
