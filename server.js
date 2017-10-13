@@ -85,8 +85,6 @@ function gateKeeper(req, res, next) {
   //  there, we'll use those over the default.
   //  Either way, we're guaranteed to end up
   //  with an object that has `user` and `pass` keys.
-
-
   const { user, pass } = Object.assign(
     { user: null, pass: null },
     queryString.parse(req.get('x-username-and-password'))
@@ -135,6 +133,12 @@ app.post('/api/auth/login', function(req, res) {
       .status(403)
       .json({ message: 'Must supply valid user credentials' });
   }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  // With the way this app is built,
+  // you'll have to remove the `isLoggedIn` cookie
+  // and clear out app.locals.user. Google away!
 });
 
 app.listen(8080, () => {
