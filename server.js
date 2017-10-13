@@ -48,7 +48,6 @@ const USERS = [
   }
 ];
 
-
 app.use(express.static('public'));
 
 app.use(bodyParser.json());
@@ -68,32 +67,36 @@ app.use((req, res, next) => {
 });
 
 function gateKeeper(req, res, next) {
-  //  `Object.assign` here gives us a neat, clean way to express the following idea:
+  
+  // if we have already logged in, 
+  // app.locals.user will exist
+  // so we want to expose that user
+  // as req.user, and move on
+  if (app.locals.user) {
+    req.user = app.locals.user;
+    next();
+  }
+
+  // `Object.assign` here gives us a clean way to express the following idea:
   //  We want to create an object with default
   //  values of `null` for `user` and `pass`,
   //  and *then*, if after parsing the request header
   //  we find values for `user` and `pass` set
   //  there, we'll use those over the default.
   //  Either way, we're guaranteed to end up
-  //  with an object that has `user` and `pass`
-  //  keys.
+  //  with an object that has `user` and `pass` keys.
+
 
   const { user, pass } = Object.assign(
     { user: null, pass: null },
     queryString.parse(req.get('x-username-and-password'))
   );
 
-  // ^^ the more verbose way to express this is:
-  //
-  // const parsedHeader = queryString.parse(req.get('x-username-and-password'));
-  // const user = parsedHeader.user || null;
-  // const pass = parsedHeader.pass || null;
 
-  // if there's a user in `USERS` with the username
-  // and password from the request headers,
-  // we set `req.user` equal to that object.
-  // Otherwise, `req.user` will be undefined.
-  req.user = USERS.find(
+  // app.locals is a place set aside for arbitrary data.
+  // This is NOT how we persist user login in a real app; 
+  // you will learn that later.
+  app.locals.user = USERS.find(
     usr => usr.userName === user && usr.password === pass
   );
   
@@ -123,12 +126,12 @@ app.get('/api/users/me', (req, res) => {
 
 app.post('/api/auth/login', function(req, res) {
   if (req.user) {
-    res.cookie('isLoggedIn', true);
-    const { firstName, lastName, id, userName, position } = req.user;
-    return res.json({ firstName, lastName, id, userName, position });
+    res.cookie('isLoggedIn', true)
+      .sendStatus(204);
   }
+  // send an error message if no or wrong credentials sent
   if (req.user === undefined) {
-    return res
+    res
       .status(403)
       .json({ message: 'Must supply valid user credentials' });
   }
