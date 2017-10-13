@@ -42,6 +42,8 @@ function handleLogin() {
     const requestObj = {
       url: '/api/auth/login',
       method: 'POST',
+      // this `headers` property sets headers before the request is sent
+      // similar to how you can set them in postman
       headers: authHeader,
       success: processResponse,
       error: processResponse
