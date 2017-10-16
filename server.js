@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require('express');
 const queryString = require('query-string');
 const bodyParser = require('body-parser');
@@ -68,15 +70,6 @@ app.use((req, res, next) => {
 
 function gateKeeper(req, res, next) {
   
-  // if we have already logged in, 
-  // app.locals.user will exist
-  // so we want to expose that user
-  // as req.user, and move on
-  if (app.locals.user) {
-    req.user = app.locals.user;
-    next();
-  }
-
   // `Object.assign` here gives us a clean way to express the following idea:
   //  We want to create an object with default
   //  values of `null` for `user` and `pass`,
@@ -98,6 +91,15 @@ function gateKeeper(req, res, next) {
     usr => usr.userName === user && usr.password === pass
   );
   
+  // if we have already logged in, 
+  // app.locals.user will exist
+  // so we want to expose that user
+  // as req.user, and move on
+  if (app.locals.user) {
+    req.user = app.locals.user;
+    next();
+  }
+
   // gotta call `next()`!!! otherwise this middleware
   // will hang.
   next();
@@ -139,6 +141,9 @@ app.post('/api/auth/logout', (req, res) => {
   // TODO: With the way this app is built,
   // you'll have to remove the `isLoggedIn` cookie
   // and clear out app.locals.user. Google away!
+  app.locals.user = {user: null, pass: null};
+  res.cookie('isLoggedIn', false)
+    .sendStatus(204);
 });
 
 app.listen(8080, () => {

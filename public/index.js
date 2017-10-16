@@ -1,4 +1,4 @@
-/* global Cookies */
+/* global $ Cookies */
 'use strict';
 
 // This will store a boolean that reports
@@ -6,6 +6,7 @@
 // it will be updated on page load,
 // and upon form submission
 let isLoggedIn;
+let justLoggedOut = false;
 
 $(function() {
   // check the isLoggedIn cookie,
@@ -16,6 +17,7 @@ $(function() {
   // to show the feedback
   renderApp({ showFeedback: false });
   handleLogin();
+  handleLogout();
 });
 
 // this function is simple now,
@@ -29,7 +31,7 @@ function renderApp(opts) {
 function handleLogin() {
   $('form').on('submit', function(e) {
     e.preventDefault();
-
+    console.log('handleLogin clicked');
     // Here, we quickly convert the form
     // into a query string.
     // See $ docs on .serialize():
@@ -49,6 +51,26 @@ function handleLogin() {
       error: processResponse
     };
 
+    $.ajax(requestObj);
+  });
+}
+
+function handleLogout() {
+  $('nav').on('click', '.js-logout', function(e) {
+    // const serializedForm = $('form').serialize();
+    // const authHeader = {
+    //   // 'x-username-and-password': serializedForm
+    // };
+    const requestObj = {
+      url: '/api/auth/logout',
+      method: 'POST',
+      // this `headers` property sets headers before the request is sent
+      // similar to how you can set them in postman
+      // headers: authHeader,
+      success: processResponse,
+      error: processResponse
+    };
+    justLoggedOut = true;
     $.ajax(requestObj);
   });
 }
@@ -73,13 +95,16 @@ function generateNavHTML() {
   // should trigger all the server-side stuff
   // that will log us out
 
-  let loginTxt = 'Login';
+  let loginLink = '<a href="#">Login</a>';
+  let logoutLink = '<a href="#" class="logout js-logout">Logout</a>';
+  let displayLink = '';
   if (isLoggedIn) {
-    loginTxt = 'Hi, user!';
+    displayLink = logoutLink;
+  } else {
+    displayLink = loginLink;
   }
   return (
-    `<a href="#">Home</a>
-    <a href="#">${loginTxt}</a>`
+    `<a href="#">Home</a> ${displayLink}`
   );
 }
 
@@ -107,6 +132,8 @@ function generateFeedback() {
 
   if (isLoggedIn) {
     feedback = '<p>You\'re logged in!</p>';
+  } else if (justLoggedOut) {
+    feedback = '<p>You\'ve been logged out!</p>';
   }
   return feedback;
 }
